@@ -37,7 +37,7 @@ const Login = () => {
         color='#202020'
       />
       <Formik
-        initialValues={{ email: '', password: '' }}
+        initialValues={{ email: 'kkk@gmail.com', password: 'Kkk@123' }}
         validationSchema={validationSchema}
         onSubmit={handleLogin}
       >

@@ -19,7 +19,7 @@ const Index = () => {
         style={styles.video}
         resizeMode="cover"
         repeat
-        muted
+        muted={true}
         onBuffer={() => {}}
         onError={(e) => console.log(e)}
       />
