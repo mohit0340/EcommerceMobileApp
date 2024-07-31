@@ -6,11 +6,14 @@ import Index from './src';
 import Register from './src/auth/register';
 import Login from './src/auth/login';
 import Context from './src/Service/context/context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import TabIndex from "./src/(tabs)/index"
 
 const Stack = createNativeStackNavigator();
 
 const Layout = () => {
   console.log("Layout component rendered");
+ const Token= AsyncStorage.getItem('token')
   return (
     <Context>
     <NavigationContainer>
@@ -28,6 +31,11 @@ const Layout = () => {
         <Stack.Screen
           name="register"
           component={Register}
+          options={{ headerShown: false, title: "Welcome" }}
+        />
+         <Stack.Screen
+          name="protected"
+          component={Token==null?Login:TabIndex}
           options={{ headerShown: false, title: "Welcome" }}
         />
       </Stack.Navigator>

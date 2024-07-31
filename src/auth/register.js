@@ -25,7 +25,7 @@ const Register = () => {
   const [image, setImage] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
-  const {RegisterUser}=useContext(MainContext)
+  const { RegisterUser } = useContext(MainContext);
 
   const pickImage = async (setFieldValue) => {
     const result = await ImagePicker.launchImageLibrary({
@@ -35,9 +35,14 @@ const Register = () => {
       quality: 1,
     });
 
-    if (!result.didCancel) {
-      setImage(result.assets[0].uri);
-      setFieldValue('image', result.assets[0].uri);
+    if (!result.didCancel && result.assets && result.assets.length > 0) {
+      const pickedImage = result.assets[0];
+      setImage(pickedImage.uri);
+      setFieldValue('image', {
+        uri: pickedImage.uri,
+        name: pickedImage.fileName ,
+        type: pickedImage.type ,
+      });  
     }
   };
 
@@ -48,10 +53,12 @@ const Register = () => {
     formData.append('email', values.email);
     formData.append('password', values.password);
     formData.append('mobile', values.mobile);
+
+    // Append image correctly
     formData.append('image', {
-      uri: values.image,
-      name: user.image.fileName,
-      type: user.image.type,
+      uri: values.image.uri,
+      name: values.image.name,
+      type: values.image.type,
     });
 
     const response = await RegisterUser(formData);

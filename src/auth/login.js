@@ -21,7 +21,7 @@ const Login = () => {
     const login = await UserLogin(values);
     if (login) {
       setSpinner(false);
-      navigation.navigate('auth');
+      navigation.navigate('protected');
     } else {
       setSpinner(false);
     }

@@ -1,6 +1,6 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { StyleSheet, ToastAndroid } from 'react-native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 export const MainContext = createContext();
@@ -8,7 +8,50 @@ export const MainContext = createContext();
 const Context = ({ children }) => {
   const [product, setProduct] = useState('');
   const [user, setUser] = useState('');
-  const localpath = 'https://bright-tires-appear.loca.lt';
+  const localpath = 'https://upset-rabbits-remain.loca.lt';
+
+
+
+
+    
+ 
+  
+ 
+
+
+const GetUserData=async(Token)=>{
+  console.log(Token)
+  try{
+    const res = await axios.get(`${localpath}/api/users/protected`,{
+      headers: {
+        Authorization: `${Token}`,
+      },
+    });
+
+      if (res.status == 200) {
+        console.log(res.data);
+        setUser(res.data)
+
+        return true;
+      } else {
+        
+        console.log(res);
+        return false;
+      }
+
+  }
+  catch(err){
+    console.log(err.response.data.message );
+    return false;
+
+  }
+
+
+}
+
+
+
+
 
   const UserLogin = async (values) => {
     try {
@@ -18,12 +61,11 @@ const Context = ({ children }) => {
         console.log(res.data);
         ToastAndroid.show(res.data.message, ToastAndroid.SHORT);
 
-        // Store the token in AsyncStorage
-        // await AsyncStorage.setItem('token', res.data.token);
+        await AsyncStorage.setItem('token', res.data.token);
 
-        // Confirm the token is set by retrieving it
-        // const token = await AsyncStorage.getItem('token');
-        // console.log('Stored token:', token);
+       
+        const token = await AsyncStorage.getItem('token');
+        console.log('token', token);
 
         return true;
       } else {
@@ -32,8 +74,8 @@ const Context = ({ children }) => {
         return false;
       }
     } catch (err) {
-      console.log(err.response?.data?.message || err.message);
-      ToastAndroid.show('Login failed', ToastAndroid.SHORT);
+      console.log(err.response.data.message );
+      ToastAndroid.show(err.response.data.message, ToastAndroid.SHORT);
       return false;
     }
   };
@@ -96,7 +138,7 @@ const Context = ({ children }) => {
   };
 
   return (
-    <MainContext.Provider value={{ product, getProducts, user, UserLogin, RegisterUser }}>
+    <MainContext.Provider value={{ product, getProducts, user, UserLogin, RegisterUser,GetUserData }}>
       {children}
     </MainContext.Provider>
   );
