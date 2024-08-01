@@ -11,8 +11,7 @@ const Context = ({children}) => {
   const [user, setUser] = useState('');
   const [cart, SetCart] = useState('');
   const [category, setCategory] = useState('');
-  const localpath = 'https://eleven-seals-chew.loca.lt';
-
+  const localpath = 'https://brave-houses-sit.loca.lt';
   const GetUserData = async () => {
     try {
       let token = await AsyncStorage.getItem('token');
@@ -157,17 +156,17 @@ const Context = ({children}) => {
     }
   };
 
-  const CartUpdate = async ({userId, productId, quantity, action, message}) => {
+  const CartUpdate = async (data) => {
    
     try {
       let token = await AsyncStorage.getItem('token');
       let res = await axios.post(
         `${localpath}/api/cart/update`,
         {
-          userId: userId,
-          productId: productId,
-          quantity: quantity,
-          action: action,
+          userId: data.userId,
+          productId: data.productId,
+          quantity: data.quantity,
+          action: data.action,
         },
         {
           headers: {
@@ -177,7 +176,7 @@ const Context = ({children}) => {
         },
       );
       if (res.status == 200) {
-        ToastAndroid.show(message, ToastAndroid.SHORT);
+        ToastAndroid.show(data.message, ToastAndroid.SHORT);
         
         console.log(res);
         return true;
@@ -218,7 +217,7 @@ const Context = ({children}) => {
 
 
   const CartData=async(id)=>{
-    setProgress(true)
+    
       if(user?.role=="user"){
     try {
         let res = await axios.get(`${localpath}/api/cart/${id}`
@@ -233,7 +232,7 @@ const Context = ({children}) => {
         console.log(res)
         if (res.status == 200) {
           SetCart(res.data.cart.products)
-          console.log(res)
+          console.log(res.data.cart.products)
           
           return true;
         }else{
@@ -254,6 +253,7 @@ const Context = ({children}) => {
         localpath,
         category,
         cart,
+        CartData,
         getProducts,
         user,
         UserLogin,

@@ -12,7 +12,9 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-native-community/viewpager": "^5.0.11",
     "@react-native-masked-view/masked-view": "^0.3.1",
+    "@react-native-vector-icons/ionicons": "^7.4.0-alpha.17",
     "@react-native-vector-icons/material-icons": "^0.0.1-alpha.16",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/drawer": "^6.7.2",
