@@ -8,16 +8,19 @@ import Login from './src/auth/login';
 import Context from './src/Service/context/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TabIndex from "./src/(tabs)/index"
+import ForgotPassword from './src/auth/forgot-password';
 
 const Stack = createNativeStackNavigator();
 
 const Layout = () => {
   console.log("Layout component rendered");
- const Token= AsyncStorage.getItem('token')
+
+ let  Token=async()=>await AsyncStorage.getItem('token')
   return (
     <Context>
     <NavigationContainer>
       <Stack.Navigator>
+        
         <Stack.Screen
           name="auth"
           component={Index}
@@ -35,8 +38,13 @@ const Layout = () => {
         />
          <Stack.Screen
           name="protected"
-          component={Token==null?Login:TabIndex}
+          component={TabIndex}
           options={{ headerShown: false, title: "Welcome" }}
+        />
+         <Stack.Screen
+          name="forgotpassword"
+          component={ForgotPassword}
+          options={{ headerShown: true, title: "Forgot Password" }}
         />
       </Stack.Navigator>
     </NavigationContainer>
