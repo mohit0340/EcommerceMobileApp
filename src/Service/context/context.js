@@ -133,27 +133,26 @@ const Context = ({children}) => {
         },
       );
       if (res.status == 200) {
-        toast.success(res.data.message);
-        GetUserData();
-        console.log('user updated successfully');
+        ToastAndroid.show('Profile updated Successfully', ToastAndroid.SHORT);
+        GetUserData()
         return true;
       } else {
-        console.log('User update with status:', res.status);
-        ToastAndroid.show('Update Failed', ToastAndroid.SHORT);
+        console.log('Error in update profile', res.status);
+        ToastAndroid.show('Error in update profile', ToastAndroid.SHORT);
         return false;
       }
     } catch (err) {
       console.log(
-        'Update User Error:',
+        'update profile error:',
         err.response?.data?.message || err.message,
       );
       ToastAndroid.show(
-        `Update failed: ${err.response?.data?.message || err.message}`,
+        `update profile error: ${err.response?.data?.message || err.message}`,
         ToastAndroid.SHORT,
       );
-
       return false;
     }
+
   };
 
   const CartUpdate = async (data) => {
@@ -177,6 +176,8 @@ const Context = ({children}) => {
       );
       if (res.status == 200) {
         ToastAndroid.show(data.message, ToastAndroid.SHORT);
+    
+    
         
         console.log(res);
         return true;
@@ -259,7 +260,7 @@ const Context = ({children}) => {
         UserLogin,
         RegisterUser,
         GetUserData,
-        UpdateUser,
+       
         CartUpdate,
         CategoryGet,
         UpdateUser

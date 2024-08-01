@@ -113,7 +113,7 @@ const Cart = () => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#e91e63" />
+        <ActivityIndicator size="large" color="#007BFF" />
         <Text style={styles.title}>Loading...</Text>
       </View>
     );
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 16,
-    color: '#e91e63',
+    color: '#007BFF',
     marginVertical: 8,
   },
   quantityContainer: {
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   button: {
-    backgroundColor: '#e91e63',
+    backgroundColor: '#007BFF',
     borderRadius: 4,
     padding: 8,
     marginHorizontal: 4,
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   removeButtonText: {
-    color: '#e91e63',
+    color: '#007BFF',
     textDecorationLine: 'underline',
   },
   emptyText: {
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     marginTop: 10,
-    backgroundColor: '#e91e63',
+    backgroundColor: '#007BFF',
     padding: 12,
     borderRadius: 4,
   },
