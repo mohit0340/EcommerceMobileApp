@@ -1,31 +1,33 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useContext, useRef } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Image, ToastAndroid, ScrollView } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { MainContext } from '../Service/context/context';
-import OTPInputView from '@twotalltotems/react-native-otp-input';
+import OTPInputView from 'react-native-otp-textinput';
 
 const ForgotPassword = ({ navigation }) => {
   const [step, setStep] = useState(0);
   const [email, setEmail] = useState('');
+  const input = useRef(null);
 
-  const { localpath, darkMode } = useContext(MainContext);
+  const { localpath } = useContext(MainContext);
 
   const sendOTP = async (values, { setSubmitting, setErrors }) => {
     try {
       const response = await axios.post(`${localpath}/api/users/forgot-password`, { email: values.email });
       if (response.status === 200) {
-        Alert.alert('Success', response.data.message);
+        ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
         setEmail(values.email);
         setSubmitting(false);
         setStep(1);
       } else {
+        ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
         Alert.alert('Error', response.data.message);
       }
     } catch (error) {
       setSubmitting(false);
-      Alert.alert('Error', error.response?.data?.message || 'Error sending OTP');
+      ToastAndroid.show(error?.response?.data?.message || 'Error in Sending OTP', ToastAndroid.SHORT);
       setErrors({ email: error.response?.data?.message || 'Error sending OTP' });
     }
   };
@@ -36,7 +38,7 @@ const ForgotPassword = ({ navigation }) => {
       if (response.status === 200) {
         Alert.alert('Success', response.data.message);
         setSubmitting(false);
-        navigation.navigate('Login');
+        navigation.navigate('login');
       }
     } catch (error) {
       Alert.alert('Error', error.response?.data?.message || 'Error verifying OTP');
@@ -45,8 +47,16 @@ const ForgotPassword = ({ navigation }) => {
     }
   };
 
+
+
+
+
+
+
   return (
-    <View style={[styles.container, darkMode && styles.darkMode]}>
+    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+    <View style={[styles.container, { marginTop: 30 }]}>
+      
       <Image source={require('../images/forgot.png')} style={styles.image} />
       {step === 0 ? (
         <Formik
@@ -59,9 +69,9 @@ const ForgotPassword = ({ navigation }) => {
           {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting }) => (
             <View style={styles.formContainer}>
               <TextInput
-                style={[styles.input, darkMode && styles.darkInput]}
+                style={styles.input}
                 placeholder="Email Address"
-                placeholderTextColor={darkMode ? '#E2DFD0' : '#aaa'}
+                placeholderTextColor={'#aaa'}
                 onChangeText={handleChange('email')}
                 onBlur={handleBlur('email')}
                 value={values.email}
@@ -72,59 +82,62 @@ const ForgotPassword = ({ navigation }) => {
           )}
         </Formik>
       ) : (
-        <Formik
-          initialValues={{ otp: '', newpassword: '', confirmnewpassword: '' }}
-          validationSchema={Yup.object({
-            otp: Yup.string().required('OTP is Required'),
-            newpassword: Yup.string().min(8, 'Password must be at least 8 characters').required('Password is Required'),
-            confirmnewpassword: Yup.string().oneOf([Yup.ref('newpassword'), null], 'Passwords must match').required('Confirm Password is Required'),
-          })}
-          onSubmit={verifyOTPAndChangePassword}
-        >
-          {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting }) => (
-            <View style={styles.formContainer}>
-              <OTPInputView
-                style={styles.otpInput}
-                pinCount={4}
-                code={values.otp}
-                onCodeChanged={(code) => handleChange('otp')(code)}
-                autoFocusOnLoad
-                codeInputFieldStyle={[styles.otpInputField, darkMode && styles.darkInput]}
-                codeInputHighlightStyle={styles.otpInputHighlight}
-                placeholderTextColor={darkMode ? '#E2DFD0' : '#aaa'}
-              />
-              {errors.otp && <Text style={styles.errorText}>{errors.otp}</Text>}
-              <TextInput
-                style={[styles.input, darkMode && styles.darkInput]}
-                placeholder="New Password"
-                secureTextEntry
-                onChangeText={handleChange('newpassword')}
-                onBlur={handleBlur('newpassword')}
-                value={values.newpassword}
-                placeholderTextColor={darkMode ? '#E2DFD0' : '#aaa'}
-              />
-              {errors.newpassword && <Text style={styles.errorText}>{errors.newpassword}</Text>}
-              <TextInput
-                style={[styles.input, darkMode && styles.darkInput]}
-                placeholder="Confirm New Password"
-                secureTextEntry
-                onChangeText={handleChange('confirmnewpassword')}
-                onBlur={handleBlur('confirmnewpassword')}
-                value={values.confirmnewpassword}
-                placeholderTextColor={darkMode ? '#E2DFD0' : '#aaa'}
-              />
-              {errors.confirmnewpassword && <Text style={styles.errorText}>{errors.confirmnewpassword}</Text>}
-              <View style={styles.buttonContainer}>
-                <Button title="Change Password" onPress={handleSubmit} disabled={isSubmitting} color="#007BFF" />
-                <TouchableOpacity onPress={() => {}} style={styles.resetButton}>
-                  <Text style={styles.resetButtonText}>Reset</Text>
-                </TouchableOpacity>
+       
+          <Formik
+            initialValues={{ otp: '', newpassword: '', confirmnewpassword: '' }}
+            validationSchema={Yup.object({
+              otp: Yup.string().length(4,"OTP is Required").required('OTP is Required'),
+              newpassword: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is Required'),
+              confirmnewpassword: Yup.string().oneOf([Yup.ref('newpassword'), null], 'Passwords must match').required('Confirm Password is Required'),
+            })}
+            onSubmit={verifyOTPAndChangePassword}
+          >
+            {({ handleChange, handleBlur, handleSubmit, values, errors, isSubmitting,setFieldValue }) => (
+              <View style={styles.formContainer}>
+                <OTPInputView
+  ref={input}
+  style={styles.otpInput}
+  inputCount={4}
+  autoFocusOnLoad
+handleTextChange={(data)=>setFieldValue('otp',data)}
+/>
+                
+                {errors.otp && <Text style={styles.errorText}>{errors.otp}</Text>}
+                <TextInput
+                  style={styles.input}
+                  placeholder="New Password"
+                  secureTextEntry
+                  onChangeText={handleChange('newpassword')}
+                  onBlur={handleBlur('newpassword')}
+                  value={values.newpassword}
+                  placeholderTextColor={'#aaa'}
+                />
+                {errors.newpassword && <Text style={styles.errorText}>{errors.newpassword}</Text>}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirm New Password"
+                  secureTextEntry
+                  onChangeText={handleChange('confirmnewpassword')}
+                  onBlur={handleBlur('confirmnewpassword')}
+                  value={values.confirmnewpassword}
+                  placeholderTextColor={'#aaa'}
+                />
+                {errors.confirmnewpassword && <Text style={styles.errorText}>{errors.confirmnewpassword}</Text>}
+                <View style={styles.buttonContainer}>
+                  <Button title="Change Password" onPress={handleSubmit} disabled={isSubmitting} color="#007BFF" />
+                  <TouchableOpacity onPress={() => {}} style={styles.resetButton}>
+                    <Text style={styles.resetButtonText}>Reset</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
-        </Formik>
+            )}
+          </Formik>
+       
       )}
+     
     </View>
+    </ScrollView>
+    
   );
 };
 
@@ -134,11 +147,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
   },
-  darkMode: {
-    backgroundColor: '#181818',
-  },
   image: {
-    height: 200,
+    height: 250,
     width: '100%',
     marginBottom: 20,
   },
@@ -153,22 +163,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 15,
   },
-  darkInput: {
-    borderColor: '#E2DFD0',
-    color: '#E2DFD0',
-  },
   otpInput: {
-    width: '100%',
-    height: 50,
-    marginBottom: 15,
-  },
-  otpInputField: {
     width: 50,
-    height: 50,
+    height: 60, // Increase height if needed
+    flex:1,
+    justifyContent:"space-between",
+    alignItems:"center",
+    fontSize:25,
+    textDecorationLine:"underline",
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
-    color: 'black',
+    borderRadius: 50,
+    textAlign:"center",
+    marginBottom:15
+
+
+    
+  },
+  otpInputField: {
+    // width: 60, // Adjust width if needed
+    // height: 60, // Adjust height if needed
+
   },
   otpInputHighlight: {
     borderColor: '#007BFF',
@@ -191,6 +206,10 @@ const styles = StyleSheet.create({
   resetButtonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  scrollViewContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
 });
 

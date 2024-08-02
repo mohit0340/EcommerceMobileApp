@@ -11,7 +11,7 @@ const Context = ({children}) => {
   const [user, setUser] = useState('');
   const [cart, SetCart] = useState('');
   const [category, setCategory] = useState('');
-  const localpath = 'https://light-planes-rush.loca.lt';
+  const localpath = 'https://modern-parents-drum.loca.lt';
   const GetUserData = async () => {
     try {
       let token = await AsyncStorage.getItem('token');
