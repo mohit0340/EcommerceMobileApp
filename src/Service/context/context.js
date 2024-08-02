@@ -7,11 +7,11 @@ import {measure} from 'react-native-reanimated';
 export const MainContext = createContext();
 
 const Context = ({children}) => {
-  const [product, setProduct] = useState('');
-  const [user, setUser] = useState('');
-  const [cart, SetCart] = useState('');
-  const [category, setCategory] = useState('');
-  const localpath = 'https://modern-parents-drum.loca.lt';
+  const [product, setProduct] = useState(null);
+  const [user, setUser] = useState(null);
+  const [cart, SetCart] = useState(null);
+  const [category, setCategory] = useState(null);
+  const localpath = 'https://cruel-mangos-leave.loca.lt';
   const GetUserData = async () => {
     try {
       let token = await AsyncStorage.getItem('token');
@@ -43,7 +43,7 @@ const Context = ({children}) => {
       if (res.status == 200) {
         console.log(res.data);
         ToastAndroid.show(res.data.message, ToastAndroid.SHORT);
-        GetUserData(res.data.token);
+       await GetUserData(res.data.token);
         await AsyncStorage.setItem('token', res.data.token);
 
         return true;
@@ -133,9 +133,10 @@ const Context = ({children}) => {
         },
       );
       if (res.status == 200) {
-        ToastAndroid.show('Profile updated Successfully', ToastAndroid.SHORT);
-        GetUserData()
-        return true;
+      ToastAndroid.show('Profile updated Successfully', ToastAndroid.SHORT);
+       GetUserData()
+       return true;
+        
       } else {
         console.log('Error in update profile', res.status);
         ToastAndroid.show('Error in update profile', ToastAndroid.SHORT);
@@ -154,6 +155,36 @@ const Context = ({children}) => {
     }
 
   };
+
+  const CartData=async(id)=>{
+    
+    if(user?.role=="user"){
+  try {
+      let res = await axios.get(`${localpath}/api/cart/${id}`
+      //   {
+      //   headers:{
+      //     'Content-Type': 'application/json',
+      //     "Authorization": `Bearer ${token}`
+      //   }
+      // }
+      )
+
+      console.log(res)
+      if (res.status == 200) {
+        SetCart(res.data.cart.products)
+        console.log(res.data.cart.products)
+        
+        return true;
+      }else{
+        console.log(res);
+        return false;
+      }
+    } catch (err) {
+      console.log(err);
+      return false;
+    }}
+ 
+}
 
   const CartUpdate = async (data) => {
    
@@ -175,9 +206,9 @@ const Context = ({children}) => {
         },
       );
       if (res.status == 200) {
-        ToastAndroid.show(data.message, ToastAndroid.SHORT);
-    
-    
+       
+      await  CartData(user._id)
+      ToastAndroid.show(data.message, ToastAndroid.SHORT);
         
         console.log(res);
         return true;
@@ -217,35 +248,7 @@ const Context = ({children}) => {
   };
 
 
-  const CartData=async(id)=>{
-    
-      if(user?.role=="user"){
-    try {
-        let res = await axios.get(`${localpath}/api/cart/${id}`
-        //   {
-        //   headers:{
-        //     'Content-Type': 'application/json',
-        //     "Authorization": `Bearer ${token}`
-        //   }
-        // }
-        )
-
-        console.log(res)
-        if (res.status == 200) {
-          SetCart(res.data.cart.products)
-          console.log(res.data.cart.products)
-          
-          return true;
-        }else{
-          console.log(res);
-          return false;
-        }
-      } catch (err) {
-        console.log(err);
-        return false;
-      }}
-   
-  }
+  
 
   return (
     <MainContext.Provider

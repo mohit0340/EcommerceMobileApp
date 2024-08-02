@@ -1,9 +1,18 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
-import { MainContext } from '../Service/context/context';
+import React, {useContext, useEffect, useState, useCallback} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
+import {MainContext} from '../Service/context/context';
 
 const Cart = () => {
-  const { CartData, cart, user, CartUpdate, GetUserData, clearCart, localpath } = useContext(MainContext);
+  const {CartData, cart, user, CartUpdate, GetUserData, localpath} =
+    useContext(MainContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,84 +33,106 @@ const Cart = () => {
     };
     fetchData();
   }, [user, cart]);
+  if(!cart){
+    CartData(user._id)  }
 
-  const handleIncrement = useCallback(async (productId) => {
-    try {
-      const update = await CartUpdate({ userId: user?._id, productId, quantity: 1, action: "increment", message: "Item Quantity increased" });
-      if (update) {
-        await CartData(user._id);
-      }
-    } catch (err) {
-      setError('Failed to update cart.');
-    }
-  }, [user, CartUpdate, CartData]);
+  useEffect(()=>{
 
-  const handleDecrement = useCallback(async (productId) => {
-    try {
-      const update = await CartUpdate({ userId: user?._id, productId, quantity: 1, action: "decrement", message: "Item Quantity decreased" });
-      if (update) {
-        await CartData(user._id);
-      }
-    } catch (err) {
-      setError('Failed to update cart.');
-    }
-  }, [user, CartUpdate, CartData]);
+  },[cart])
 
-  const handleRemove = useCallback(async (productId) => {
-    try {
-      const update = await CartUpdate({ userId: user?._id, productId, quantity: 1, action: "remove", message: "Item Removed from cart" });
-      if (update) {
-        await CartData(user._id);
-      }
-    } catch (err) {
-      setError('Failed to remove item.');
-    }
-  }, [user, CartUpdate, CartData]);
-
-  const handleClearCart = useCallback(async () => {
-    try {
-      const update = await CartUpdate({ userId: user?._id, productId: '', quantity: '', action: "clear", message: "Cart cleared successfully" });
-      if (update) {
-        await CartData(user._id);
-      }
-    } catch (err) {
-      setError('Failed to clear cart.');
-    }
-  }, [user, CartUpdate, CartData]);
-
-  const calculateSubtotal = () => {
-    return cart?.reduce((total, item) => total + (item.product.price || 0) * (item.quantity || 0), 0).toFixed(2);
+  const handleIncrement = productId => {
+    CartUpdate({
+      userId: user?._id,
+      productId,
+      quantity: 1,
+      action: 'increment',
+      message: 'Item Quantity increased',
+    });
   };
 
-  const renderItem = ({ item }) => {
-    const imagePath = item.product.image ? item.product.image.replace(/\\/g, '/') : 'default-image-path'; // Fallback image path
+  const handleDecrement = productId => {
+    CartUpdate({
+      userId: user?._id,
+      productId,
+      quantity: 1,
+      action: 'decrement',
+      message: 'Item Quantity decreased',
+    });
+  };
+
+  const handleRemove = productId => {
+    CartUpdate({
+      userId: user?._id,
+      productId,
+      quantity: 1,
+      action: 'remove',
+      message: 'Item Removed from cart',
+    });
+  };
+
+  const handleClearCart = () => {
+    CartUpdate({
+      userId: user?._id,
+      productId: '',
+      quantity: '',
+      action: 'clear',
+      message: 'Cart cleared successfully',
+    });
+  };
+
+  const calculateSubtotal = () => {
+    return cart
+      ?.reduce(
+        (total, item) =>
+          total + (item.product.price || 0) * (item.quantity || 0),
+        0,
+      )
+      .toFixed(2);
+  };
+
+  const renderItem = ({item}) => {
+    const imagePath = item.product.image
+      ? item.product.image.replace(/\\/g, '/')
+      : 'default-image-path'; // Fallback image path
 
     return (
       <View style={styles.card} key={item._id}>
         <View style={styles.row}>
           <Image
-            source={{ uri: `${localpath}/${imagePath}` }}
+            source={{uri: `${localpath}/${imagePath}`}}
             style={styles.image}
-            defaultSource={{ uri: 'default-image-path' }} // Optional: Default image for better UX
+            defaultSource={{uri: 'default-image-path'}} // Optional: Default image for better UX
           />
           <View style={styles.details}>
-            <Text style={styles.productName}>{item.product.productname || 'Unnamed Product'}</Text>
-            <Text>{item.product.description || 'No description available.'}</Text>
-            <Text style={styles.price}>{item.product.price?.toFixed(2) || '0.00'} RS.</Text>
+            <Text style={styles.productName}>
+              {item.product.productname || 'Unnamed Product'}
+            </Text>
+            <Text>
+              {item.product.description || 'No description available.'}
+            </Text>
+            <Text style={styles.price}>
+              {item.product.price?.toFixed(2) || '0.00'} RS.
+            </Text>
             <View style={styles.quantityContainer}>
               <TouchableOpacity
                 onPress={() => handleDecrement(item.product._id)}
                 disabled={item.quantity <= 1}
-                style={[styles.button, item.quantity <= 1 && styles.buttonDisabled]}
-              >
+                style={[
+                  styles.button,
+                  item.quantity <= 1 && styles.buttonDisabled,
+                ]}>
                 <Text style={styles.buttonText}>-</Text>
               </TouchableOpacity>
               <Text style={styles.quantity}>{item.quantity || 0}</Text>
-              <TouchableOpacity onPress={() => handleIncrement(item.product._id)} style={styles.button}>
+              <TouchableOpacity
+                onPress={() => handleIncrement(item.product._id)}
+                style={styles.button}>
                 <Text style={styles.buttonText}>+</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => handleRemove(item.product._id)} style={styles.removeButton}>
+            <TouchableOpacity
+              onPress={() => handleRemove(item.product._id)}
+              style={styles.removeButton}>
               <Text style={styles.removeButtonText}>Remove</Text>
             </TouchableOpacity>
           </View>
@@ -134,8 +165,12 @@ const Cart = () => {
           <Text style={styles.title}>Cart</Text>
           {cart && cart.length > 0 && (
             <View style={styles.footer}>
-              <Text style={styles.subtotal}>Subtotal: {calculateSubtotal()} RS.</Text>
-              <TouchableOpacity onPress={handleClearCart} style={styles.clearButton}>
+              <Text style={styles.subtotal}>
+                Subtotal: {calculateSubtotal()} RS.
+              </Text>
+              <TouchableOpacity
+                onPress={handleClearCart}
+                style={styles.clearButton}>
                 <Text style={styles.clearButtonText}>Clear Cart</Text>
               </TouchableOpacity>
             </View>
@@ -145,7 +180,9 @@ const Cart = () => {
       data={cart}
       renderItem={renderItem}
       keyExtractor={item => item._id}
-      ListEmptyComponent={<Text style={styles.emptyText}>Your cart is empty.</Text>}
+      ListEmptyComponent={
+        <Text style={styles.emptyText}>Your cart is empty.</Text>
+      }
     />
   );
 };
@@ -161,7 +198,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     marginTop: 16,
-    textAlign: "center"
+    textAlign: 'center',
   },
   card: {
     marginBottom: 16,

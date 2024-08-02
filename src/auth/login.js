@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { MainContext } from '../Service/context/context';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { Screen } from 'react-native-screens';
 
 
 
@@ -26,8 +27,8 @@ const Login = () => {
     setSpinner(true);
     const login = await UserLogin(values);
     if (login) {
-      setSpinner(false);
-      navigation.navigate('protected');
+   
+      navigation.navigate('protected')
     } else {
       setSpinner(false);
     }
@@ -37,14 +38,14 @@ const Login = () => {
     <View style={styles.container}>
       
       <Image source={require('../images/login.png')} style={{height:250,width:"100%"}}/>
-      <Spinner
-        visible={spinner}
-        textContent={'Loading...'}
-        textStyle={styles.spinnerTextStyle}
-        color='#202020'
-      />
+        <Spinner
+          visible={spinner}
+          textContent={'Loging...'}
+          textStyle={styles.spinnerTextStyle}
+          color='#202020'
+        />
       <Formik
-        initialValues={{ email: 'kkk@gmail.com', password: 'Kkk@123' }}
+        initialValues={{ email: 'mohitrathod0340@gmail.com', password: 'Mohit@123' }}
         validationSchema={validationSchema}
         onSubmit={handleLogin}
       >
