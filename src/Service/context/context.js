@@ -3,6 +3,7 @@ import {StyleSheet, ToastAndroid} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {measure} from 'react-native-reanimated';
+import { useNavigation } from '@react-navigation/native';
 
 export const MainContext = createContext();
 
@@ -11,7 +12,11 @@ const Context = ({children}) => {
   const [user, setUser] = useState(null);
   const [cart, SetCart] = useState(null);
   const [category, setCategory] = useState(null);
-  const localpath = 'https://cruel-mangos-leave.loca.lt';
+  const navigation=useNavigation()
+
+
+  
+  const localpath = 'https://mean-steaks-taste.loca.lt';
   const GetUserData = async () => {
     try {
       let token = await AsyncStorage.getItem('token');
@@ -45,7 +50,9 @@ const Context = ({children}) => {
         ToastAndroid.show(res.data.message, ToastAndroid.SHORT);
        await GetUserData(res.data.token);
         await AsyncStorage.setItem('token', res.data.token);
-
+        let tkn=await AsyncStorage.getItem('token')
+        console.log(tkn)
+        
         return true;
       } else {
         ToastAndroid.show('Login failed', ToastAndroid.SHORT);
@@ -95,16 +102,40 @@ const Context = ({children}) => {
     }
   };
 
-  const getProducts = async (categoryval = '', searchterm = '') => {
+  // const getProducts = async (categoryval = '', searchterm = '') => {
+  //   try {
+  //     const res = await axios.get(`${localpath}/api/products`, {
+  //       params: {
+  //         category: categoryval !== 'all' ? categoryval : '', // Default to empty if 'all'
+  //         searchTerm: searchterm,
+  //       },
+  //     });
+
+  //     if (res.status == 200) {
+  //       setProduct(res.data.products);
+  //       console.log(res);
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+
+  //     return false;
+  //   }
+  // };
+
+
+  const getProducts = async (categories = [], searchterm = '') => {
     try {
       const res = await axios.get(`${localpath}/api/products`, {
         params: {
-          category: categoryval !== 'all' ? categoryval : '', // Default to empty if 'all'
+          category: categories.length > 0 ? categories.join(',') : '', // Join categories if there are multiple
           searchTerm: searchterm,
         },
       });
-
-      if (res.status == 200) {
+  
+      if (res.status === 200) {
         setProduct(res.data.products);
         console.log(res);
         return true;
@@ -113,10 +144,11 @@ const Context = ({children}) => {
       }
     } catch (err) {
       console.log(err);
-
       return false;
     }
   };
+  
+
 
   const UpdateUser = async (id, formData) => {
     console.log(id,formData)
@@ -259,6 +291,7 @@ const Context = ({children}) => {
         cart,
         CartData,
         getProducts,
+        setUser,
         user,
         UserLogin,
         RegisterUser,

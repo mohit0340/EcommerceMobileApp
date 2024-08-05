@@ -1,3 +1,4 @@
+
 // import {
 //   View,
 //   Text,
@@ -7,11 +8,16 @@
 //   Image,
 //   TouchableOpacity,
 //   SectionList,
+//   ActivityIndicator,
+//   Button,
+//   ToastAndroid,
 // } from 'react-native';
-// import React, {useContext, useEffect, useState} from 'react';
-// import {MainContext} from '../Service/context/context';
+// import React, { useContext, useEffect, useState } from 'react';
+// import { MainContext } from '../Service/context/context';
 // import Icon from 'react-native-vector-icons/MaterialIcons';
 // import Modal from 'react-native-modal';
+// import { useNavigation } from '@react-navigation/native';
+
 
 // const Product = () => {
 //   const {
@@ -24,27 +30,48 @@
 //     CartData,
 //     category,
 //     CategoryGet,
+  
 //   } = useContext(MainContext);
+
 //   const [search, setSearch] = useState('');
-//   const [categoryitem, setCategory] = useState('All');
+//   const [categoryitem, setCategory] = useState('');
 //   const [sections, setSections] = useState([]);
 //   const [isModalVisible, setModalVisible] = useState(false);
+//   const [loading, setLoading] = useState(true); // Added loading state
+//   const navigation=useNavigation()
+  
 
 //   useEffect(() => {
-//     getProducts(categoryitem, search);
-//   }, [categoryitem, search]);
+//     const fetchData = async () => {
+//       setLoading(true);
+//       try {
+//         await getProducts(categoryitem, search);
+//       } catch (error) {
+//         console.error('Error fetching data:', error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchData();
+//   }, [categoryitem,searchclick]);
 
-//   useEffect(() => {
-//     if (!product) {
-//       getProducts();
+//   // useEffect(()=>{
+//   //   getProducts(categoryitem, search);
+//   // },[search])
+
+//   useEffect(()=>{
+//       if(!user){
+//         GetUserData()
+//       }
+//   },[user])
+
+//   useEffect(()=>{
+//     if(!category){
+//       CategoryGet()
 //     }
-//   }, [product]);
+// },[category,toggleModal])
 
-//   useEffect(() => {
-//     if (!category) {
-//       CategoryGet();
-//     }
-//   }, [category]);
+
 
 //   useEffect(() => {
 //     if (product) {
@@ -56,52 +83,68 @@
 //     }
 //   }, [product]);
 
-//   useEffect(() => {
-//     if (!user) {
-//       GetUserData();
+
+//   useEffect(()=>{
+//     setTimeout(() => {
+//       if(user){
+//       ToastAndroid.show(`Welcome ${user?.firstname} ${user?.lastname} `, ToastAndroid.SHORT);
 //     }
-//   }, [user]);
+      
+//     }, 1000);
+  
+//   },[])
 
 //   const toggleModal = () => {
 //     setModalVisible(!isModalVisible);
 //   };
 
-//   const handleCategoryChange = newCategory => {
+//   const handleCategoryChange =async(newCategory) => {
+//   setSearch('')
 //     setCategory(newCategory);
-//     toggleModal(); // Close the modal after selecting a category
+
+//     toggleModal(); 
+//     await getProducts(categoryitem)// Close the modal after selecting a category
 //   };
 
-//   const handleSearchChange = text => {
+//   const handleSearchChange = (text) => {
 //     setSearch(text);
 //   };
 
-//   const HandleAddCart = async productId => {
-//     CartUpdate({
-//       userId: user?._id,
-//       productId: productId,
-//       quantity: 1,
-//       action: 'add',
-//       message: 'Item Added to cart Successfully',
-//     });
+//   const searchclick=()=>{
+//     getProducts(categoryitem, search)
+//   }
+
+//   const HandleAddCart = async (productId) => {
+//     try {
+//       await CartUpdate({
+//         userId: user?._id,
+//         productId: productId,
+//         quantity: 1,
+//         action: 'add',
+//         message: 'Item Added to cart Successfully',
+//       });
+//     } catch (error) {
+//       console.error('Error adding to cart:', error);
+//     }
 //   };
 
-//   const renderProduct = ({item}) => {
+//   const renderProduct = ({ item }) => {
 //     const imagePath = item.image.replace(/\\/g, '/');
 //     return (
 //       <View style={styles.productCard}>
 //         <Image
-//           source={{uri: `${localpath}/${imagePath}`}}
+//           source={{ uri: `${localpath}/${imagePath}` }}
 //           style={styles.productImage}
 //         />
 //         <View style={styles.productDetails}>
 //           <Text style={styles.productName}>{item.productname}</Text>
-//           {/* <Text style={styles.productDescription}>{item.description}</Text> */}
 //           <Text style={styles.productPrice}>{item.price} RS.</Text>
 //           <TouchableOpacity
 //             style={styles.addToCartButton}
 //             onPress={() => {
 //               HandleAddCart(item._id);
-//             }}>
+//             }}
+//           >
 //             <Text style={styles.addToCartButtonText}>Add to Cart</Text>
 //           </TouchableOpacity>
 //         </View>
@@ -109,15 +152,30 @@
 //     );
 //   };
 
+//   if (loading) {
+//     return (
+//       <View style={styles.loadingContainer}>
+//         <ActivityIndicator size="large" color="#007BFF" />
+//         <Text>Loading...</Text>
+//       </View>
+//     );
+//   }
+
 //   return (
 //     <View style={styles.container}>
+    
 //       <View style={styles.header}>
 //         <TextInput
-//           style={styles.searchBar}
+//           style={[styles.searchBar,{borderRadius:50}]}
 //           placeholder="Search products..."
 //           value={search}
 //           onChangeText={handleSearchChange}
+          
 //         />
+//         <TouchableOpacity onPressIn={()=>searchclick()} style={[styles.filterButton,{borderRadius:50,marginRight:5}]}>
+//           <Icon name="search" size={25} color="#fff" />
+         
+//         </TouchableOpacity>
 //         <TouchableOpacity style={styles.filterButton} onPress={toggleModal}>
 //           <Icon name="filter-list" size={24} color="#fff" />
 //           <Text style={styles.filterText}>
@@ -129,10 +187,10 @@
 //       <SectionList
 //         sections={sections}
 //         renderItem={renderProduct}
-//         renderSectionHeader={({section: {title}}) => (
+//         renderSectionHeader={({ section: { title } }) => (
 //           <Text style={styles.sectionHeader}>{title}</Text>
 //         )}
-//         keyExtractor={item => item._id}
+//         keyExtractor={(item) => item._id}
 //         contentContainerStyle={styles.productList}
 //       />
 
@@ -142,23 +200,26 @@
 //         backdropOpacity={0.5}
 //         animationIn="slideInUp"
 //         animationOut="slideOutDown"
-//         style={styles.modal}>
+//         style={styles.modal}
+//       >
 //         <View style={styles.modalContent}>
 //           <Text style={styles.modalTitle}>Select Category</Text>
 //           <FlatList
 //             data={category}
-//             renderItem={({item}) => (
+//             renderItem={({ item }) => (
 //               <TouchableOpacity
 //                 style={styles.modalItem}
-//                 onPress={() => handleCategoryChange(item.name)}>
+//                 onPress={() => handleCategoryChange(item.name)}
+//               >
 //                 <Text style={styles.modalItemText}>{item.name}</Text>
 //               </TouchableOpacity>
 //             )}
-//             keyExtractor={item => item._id}
+//             keyExtractor={(item) => item._id}
 //             ListFooterComponent={
 //               <TouchableOpacity
 //                 style={styles.modalItem}
-//                 onPress={() => handleCategoryChange('')}>
+//                 onPress={() => handleCategoryChange('')}
+//               >
 //                 <Text style={styles.modalItemText}>All</Text>
 //               </TouchableOpacity>
 //             }
@@ -199,6 +260,7 @@
 //     alignItems: 'center',
 //     flexDirection: 'row',
 //   },
+  
 //   filterText: {
 //     color: '#fff',
 //     fontSize: 16,
@@ -281,15 +343,18 @@
 //     color: '#fff',
 //     fontSize: 16,
 //   },
+//   loadingContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     backgroundColor: '#f7f7f7',
+//   },
 // });
 
 // export default Product;
 
 
-
-
-
-
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -298,13 +363,14 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  SectionList,
   ActivityIndicator,
+  SectionList
 } from 'react-native';
-import React, { useContext, useEffect, useState } from 'react';
 import { MainContext } from '../Service/context/context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
+import CheckBox from 'react-native-check-box'; // Ensure proper import
 
 const Product = () => {
   const {
@@ -316,21 +382,22 @@ const Product = () => {
     GetUserData,
     CartData,
     category,
-    CategoryGet,
-  
+    CategoryGet
   } = useContext(MainContext);
 
   const [search, setSearch] = useState('');
-  const [categoryitem, setCategory] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [sections, setSections] = useState([]);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(true);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        await getProducts(categoryitem, search);
+        await getProducts(selectedCategories, search);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -338,30 +405,24 @@ const Product = () => {
       }
     };
     fetchData();
-  }, [categoryitem,searchclick]);
+  }, [selectedCategories, search]);
 
-  // useEffect(()=>{
-  //   getProducts(categoryitem, search);
-  // },[search])
-
-  useEffect(()=>{
-      if(!user){
-        GetUserData()
-      }
-  },[user])
-
-  useEffect(()=>{
-    if(!category){
-      CategoryGet()
+  useEffect(() => {
+    if (!user) {
+      GetUserData();
     }
-},[category])
+  }, [user]);
 
-
+  useEffect(() => {
+    if (!category) {
+      CategoryGet();
+    }
+  }, [category]);
 
   useEffect(() => {
     if (product) {
       const groupedProducts = Object.entries(product).map(([key, value]) => ({
-        title: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize category name
+        title: key.charAt(0).toUpperCase() + key.slice(1),
         data: value,
       }));
       setSections(groupedProducts);
@@ -372,21 +433,21 @@ const Product = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const handleCategoryChange =async(newCategory) => {
-  setSearch('')
-    setCategory(newCategory);
+  const searchclick = async () => {
+    await getProducts(selectedCategories, search);
+  };
 
-    toggleModal(); 
-    await getProducts(categoryitem)// Close the modal after selecting a category
+  const handleCategoryChange = (categoryName) => {
+    setSelectedCategories(prevCategories =>
+      prevCategories.includes(categoryName)
+        ? prevCategories.filter(cat => cat !== categoryName)
+        : [...prevCategories, categoryName]
+    );
   };
 
   const handleSearchChange = (text) => {
     setSearch(text);
   };
-
-  const searchclick=()=>{
-    getProducts(categoryitem, search)
-  }
 
   const HandleAddCart = async (productId) => {
     try {
@@ -439,20 +500,18 @@ const Product = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TextInput
-          style={[styles.searchBar,{borderRadius:50}]}
+          style={[styles.searchBar, { borderRadius: 50 }]}
           placeholder="Search products..."
           value={search}
           onChangeText={handleSearchChange}
-          
         />
-        <TouchableOpacity onPressIn={()=>searchclick()} style={[styles.filterButton,{borderRadius:50,marginRight:5}]}>
+        <TouchableOpacity onPress={searchclick} style={[styles.filterButton, { borderRadius: 50, marginRight: 5, width: 50 }]}>
           <Icon name="search" size={25} color="#fff" />
-         
         </TouchableOpacity>
         <TouchableOpacity style={styles.filterButton} onPress={toggleModal}>
           <Icon name="filter-list" size={24} color="#fff" />
           <Text style={styles.filterText}>
-            {categoryitem === '' ? 'All' : categoryitem}
+            {selectedCategories.length === 0 ? 'All' : selectedCategories.join(', ')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -480,12 +539,16 @@ const Product = () => {
           <FlatList
             data={category}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.modalItem}
-                onPress={() => handleCategoryChange(item.name)}
-              >
-                <Text style={styles.modalItemText}>{item.name}</Text>
-              </TouchableOpacity>
+              <View style={styles.modalItem} key={item._id}>
+                <CheckBox
+                  onClick={() => handleCategoryChange(item.name)}
+                  isChecked={selectedCategories.includes(item.name)}
+                id={item._id}
+                  style={{height:20,padding:10}}
+                  checkedCheckBoxColor={'red'}
+                ></CheckBox>
+                <Text  id={item._id} style={{fontSize:20,marginLeft:10}}>{item.name}</Text>
+              </View>
             )}
             keyExtractor={(item) => item._id}
             ListFooterComponent={
@@ -514,6 +577,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: 'center',
   },
+  modalItemText: {
+    fontSize: 18,
+    color: '#333',
+  },
   searchBar: {
     flex: 1,
     height: 40,
@@ -532,8 +599,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+    maxWidth: 130,
+    // height:50,
+    overflow:'scroll'
   },
-  
   filterText: {
     color: '#fff',
     fontSize: 16,
@@ -557,14 +626,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    alignItems: 'center',
-  },
-  modalItemText: {
-    fontSize: 18,
-    color: '#333',
+    marginBottom:20
   },
   sectionHeader: {
     fontSize: 20,

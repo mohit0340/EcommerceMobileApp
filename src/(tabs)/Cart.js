@@ -6,9 +6,10 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator,
+  ActivityIndicator
 } from 'react-native';
 import {MainContext} from '../Service/context/context';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Cart = () => {
   const {CartData, cart, user, CartUpdate, GetUserData, localpath} =
@@ -130,12 +131,15 @@ const Cart = () => {
                 <Text style={styles.buttonText}>+</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity
+            
+          </View>
+         
+          <TouchableOpacity
               onPress={() => handleRemove(item.product._id)}
               style={styles.removeButton}>
-              <Text style={styles.removeButtonText}>Remove</Text>
+              <Icon name='remove-shopping-cart' style={{fontSize:35,color:'red'}}/>
             </TouchableOpacity>
-          </View>
+       
         </View>
       </View>
     );
@@ -209,6 +213,9 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+    justifyContent:'space-between',
+    alignItems:'center',
+    gap:10
   },
   image: {
     width: 100,
@@ -218,6 +225,7 @@ const styles = StyleSheet.create({
   },
   details: {
     flex: 1,
+   
   },
   productName: {
     fontSize: 18,
@@ -226,7 +234,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     color: '#007BFF',
-    marginVertical: 8,
+    marginVertical: 5,
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -241,7 +249,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     borderRadius: 4,
     padding: 8,
-    marginHorizontal: 4,
+    marginHorizontal: 8,
+    width:30
   },
   buttonDisabled: {
     backgroundColor: '#ddd',
@@ -252,11 +261,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   removeButton: {
-    marginTop: 8,
+    // marginTop: 8,
+    // fontSize:30,
+    marginEnd:22
   },
   removeButtonText: {
-    color: '#007BFF',
-    textDecorationLine: 'underline',
+    color: 'red',
+    
   },
   emptyText: {
     textAlign: 'center',

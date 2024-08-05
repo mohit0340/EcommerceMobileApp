@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ImageBackgroundComponent,Image } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -6,13 +6,14 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { MainContext } from '../Service/context/context';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { Screen } from 'react-native-screens';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
 
-const Login = () => {
+const Login = ({navigation}) => {
   const { UserLogin } = useContext(MainContext);
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const [spinner, setSpinner] = useState(false);
 
 
@@ -28,11 +29,18 @@ const Login = () => {
     const login = await UserLogin(values);
     if (login) {
    
-      navigation.navigate('protected')
+    
+        navigation.navigate('App',{screen:'product'})
+    
+    
     } else {
       setSpinner(false);
     }
   };
+  useEffect(()=>{
+const ccc=async()=>{await AsyncStorage.removeItem('token')};
+ccc();
+  })
 
   return (
     <View style={styles.container}>
@@ -45,7 +53,7 @@ const Login = () => {
           color='#202020'
         />
       <Formik
-        initialValues={{ email: 'mohitrathod0340@gmail.com', password: 'Mohit@123' }}
+        initialValues={{ email: '', password: '' }}
         validationSchema={validationSchema}
         onSubmit={handleLogin}
       >

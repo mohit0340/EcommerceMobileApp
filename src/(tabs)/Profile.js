@@ -11,13 +11,12 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
-import {Formik} from 'formik';
+import {Formik, replace} from 'formik';
 import * as Yup from 'yup';
 import {MainContext} from '../Service/context/context';
 import * as ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 
 const validationSchema = Yup.object({
   firstname: Yup.string()
@@ -38,11 +37,11 @@ const validationSchema = Yup.object({
     .required('Mobile Number is Required'),
 });
 
-const Profile = () => {
-  const {user, GetUserData, UpdateUser, localpath} = useContext(MainContext);
+const Profile = ({navigation}) => {
+  const {user,setUser, GetUserData, UpdateUser, localpath} = useContext(MainContext);
   const [loading, setLoading] = useState(true);
   const [imageUri, setImageUri] = useState(null);
-  const navigation=useNavigation()
+  
 
   useEffect(() => {
     if (!user) {
@@ -114,9 +113,10 @@ const Profile = () => {
 
   const HandleLogout = async () => {
     try {
+      setUser(null)
       await AsyncStorage.removeItem('token');
       // Reset the navigation stack and navigate to the login screen
-    //   navigation.navigate('login')
+      navigation.navigate('Auth',{screen:'auth'})
     } catch (error) {
       console.error('Error logging out:', error);
     }

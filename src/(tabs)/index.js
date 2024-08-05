@@ -1,5 +1,5 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Ensure this package is installed
 import Product from './Product';
@@ -8,7 +8,10 @@ import Profile from './Profile';
 
 const Tabs = createBottomTabNavigator();
 
-const Index = () => {
+
+
+
+const Index = ({navigation}) => {
   return (
     <Tabs.Navigator
       screenOptions={({route}) => ({
