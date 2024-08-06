@@ -16,7 +16,7 @@ const Context = ({children}) => {
 
 
   
-  const localpath = 'https://mean-steaks-taste.loca.lt';
+  const localpath = 'https://forty-teams-attack.loca.lt';
   const GetUserData = async () => {
     try {
       let token = await AsyncStorage.getItem('token');
@@ -27,7 +27,7 @@ const Context = ({children}) => {
       });
 
       if (res.status == 200) {
-        console.log(res.data);
+       
         setUser(res.data.user);
 
         return true;
@@ -48,10 +48,13 @@ const Context = ({children}) => {
       if (res.status == 200) {
         console.log(res.data);
         ToastAndroid.show(res.data.message, ToastAndroid.SHORT);
-       await GetUserData(res.data.token);
         await AsyncStorage.setItem('token', res.data.token);
-        let tkn=await AsyncStorage.getItem('token')
-        console.log(tkn)
+        const tkn=await AsyncStorage.getItem('token')
+        console.log("tkn 53",tkn)
+       await GetUserData(res.data.token);
+        
+        
+        
         
         return true;
       } else {
@@ -137,7 +140,7 @@ const Context = ({children}) => {
   
       if (res.status === 200) {
         setProduct(res.data.products);
-        console.log(res);
+       
         return true;
       } else {
         return false;
@@ -204,7 +207,7 @@ const Context = ({children}) => {
       console.log(res)
       if (res.status == 200) {
         SetCart(res.data.cart.products)
-        console.log(res.data.cart.products)
+       
         
         return true;
       }else{
@@ -268,7 +271,7 @@ const Context = ({children}) => {
       const res = await axios.get(`${localpath}/api/products/category`);
       if (res.status == 200) {
         setCategory(res.data);
-        console.log(res);
+      
         return true;
       } else {
         return false;

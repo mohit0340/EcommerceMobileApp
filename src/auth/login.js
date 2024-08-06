@@ -39,7 +39,7 @@ const Login = ({navigation}) => {
   };
   useEffect(()=>{
 const ccc=async()=>{await AsyncStorage.removeItem('token')};
-ccc();
+// ccc();
   })
 
   return (
@@ -53,7 +53,7 @@ ccc();
           color='#202020'
         />
       <Formik
-        initialValues={{ email: '', password: '' }}
+        initialValues={{ email: 'mohitrathod0340@gmail.com', password: 'Mohit@123' }}
         validationSchema={validationSchema}
         onSubmit={handleLogin}
       >
