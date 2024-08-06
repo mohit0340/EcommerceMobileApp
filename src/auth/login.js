@@ -37,10 +37,7 @@ const Login = ({navigation}) => {
       setSpinner(false);
     }
   };
-  useEffect(()=>{
-const ccc=async()=>{await AsyncStorage.removeItem('token')};
-// ccc();
-  })
+  
 
   return (
     <View style={styles.container}>
